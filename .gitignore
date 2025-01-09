@@ -1,0 +1,6 @@
+# ignore
+    # object files
+*.o
+
+    # pdf files if any
+*.pdf
