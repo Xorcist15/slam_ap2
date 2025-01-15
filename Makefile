@@ -1,6 +1,7 @@
 # Compiler and flags
 CXX = g++
-CXXFLAGS = -Wall -g
+CXXFLAGS = -Wall -g `wx-config --cxxflags`  # Include wxWidgets compile flags
+LDFLAGS = `wx-config --libs`  # Include wxWidgets link flags
 
 # Directories
 SRC_DIR = src
@@ -10,22 +11,31 @@ BIN_DIR = bin
 # Target executable
 TARGET = $(BIN_DIR)/prog
 
-# Source files
-SRC = $(wildcard $(SRC_DIR)/*.cpp)
-OBJ = $(SRC:$(SRC_DIR)/%.cpp=$(OBJ_DIR)/%.o)
+# Source files and object files
+SRC_FILES = $(wildcard $(SRC_DIR)/*.cpp)
+OBJ_FILES = $(patsubst $(SRC_DIR)/%.cpp, $(OBJ_DIR)/%.o, $(SRC_FILES))
 
-# Create build and bin directories if they don't exist
-$(OBJ_DIR) $(BIN_DIR):
-	mkdir -p $(OBJ_DIR) $(BIN_DIR)
+# Default target
+all: $(TARGET)
 
-# Build rule for the target
-$(TARGET): $(OBJ) | $(BIN_DIR)
-	$(CXX) $(OBJ) -o $(TARGET)
+# Link object files to create the executable
+$(TARGET): $(OBJ_FILES) | $(BIN_DIR)
+	$(CXX) $(OBJ_FILES) $(LDFLAGS) -o $@  # Link with wxWidgets libraries
 
-# Rule for compiling .cpp files to .o files
+# Compile source files into object files
 $(OBJ_DIR)/%.o: $(SRC_DIR)/%.cpp | $(OBJ_DIR)
 	$(CXX) $(CXXFLAGS) -c $< -o $@
 
-# Clean rule to remove generated files and directories
+# Create necessary directories if they don't exist
+$(OBJ_DIR):
+	mkdir -p $(OBJ_DIR)
+
+$(BIN_DIR):
+	mkdir -p $(BIN_DIR)
+
+# Clean build files
 clean:
 	rm -rf $(OBJ_DIR) $(BIN_DIR)
+
+# Phony targets
+.PHONY: all clean

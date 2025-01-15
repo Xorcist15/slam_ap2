@@ -1,7 +1,12 @@
-#include <iostream>
-#include "../include/main.h"
+#include <wx/wx.h>
 
-int main() {
-    printHello();
-    return 0;
-}
+class MyApp : public wxApp {
+public:
+    virtual bool OnInit() {
+        wxFrame* frame = new wxFrame(nullptr, wxID_ANY, "Hello wxWidgets");
+        frame->Show(true);
+        return true;
+    }
+};
+
+wxIMPLEMENT_APP(MyApp);
